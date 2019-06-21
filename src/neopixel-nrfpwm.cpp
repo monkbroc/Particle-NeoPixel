@@ -42,11 +42,25 @@ NeoPixel_NrfPwm* NeoPixel_NrfPwm::instances[NRF_PWM_CHANNEL_COUNT] = {
   NULL
 };
 
-const nrfx_pwm_t NeoPixel_NrfPwm::pwms[NRF5X_PWM_COUNT] = {
+const nrfx_pwm_t NeoPixel_NrfPwm::pwms[NRFX_PWM_ENABLED_COUNT] = {
     NRFX_PWM_INSTANCE(0),
     NRFX_PWM_INSTANCE(1),
     NRFX_PWM_INSTANCE(2),
     NRFX_PWM_INSTANCE(3)
+};
+
+const IrqHandlerType* NeoPixel_NrfPwm::irqHandlers[NRFX_PWM_ENABLED_COUNT] = {
+  nrfx_pwm_0_irq_handler,
+  nrfx_pwm_1_irq_handler,
+  nrfx_pwm_2_irq_handler,
+  nrfx_pwm_3_irq_handler,
+};
+
+const IRQn_Type NeoPixel_NrfPwm::irqIdx[NRFX_PWM_ENABLED_COUNT] = {
+  PWM0_IRQn,
+  PWM1_IRQn,
+  PWM2_IRQn,
+  PWM3_IRQn,
 };
 
 #define NRFX_PWM_DUTY_INVERTED 0x8000
@@ -138,6 +152,7 @@ void NeoPixel_NrfPwm::begin() {
     stopHandler3,    
   };
 
+  attachInterruptDirect(irqIdx[pwm_num], irqHandlers[pwm_num], false);
   nrfx_pwm_init(&pwms[pwm_num], &config, stopHandlers[pwm_num]);
 }
 

@@ -34,9 +34,10 @@
 #ifdef USE_DRIVER_NRFPWM
 
 #include "nrfx_pwm.h"
-#define NRF5X_PWM_COUNT 4
 
 #define DECLARE_DRIVER NeoPixel_NrfPwm driver
+
+typedef void IrqHandlerType(void);
 
 class NeoPixel_NrfPwm {
 
@@ -63,8 +64,10 @@ class NeoPixel_NrfPwm {
   static void stopHandler2(nrfx_pwm_evt_type_t eventType);
   static void stopHandler3(nrfx_pwm_evt_type_t eventType);
   static NeoPixel_NrfPwm* instances[NRF_PWM_CHANNEL_COUNT];
+  static const IrqHandlerType* irqHandlers[NRF_PWM_CHANNEL_COUNT];
+  static const IRQn_Type irqIdx[NRF_PWM_CHANNEL_COUNT];
 
-  static const nrfx_pwm_t pwms[NRF5X_PWM_COUNT];
+  static const nrfx_pwm_t pwms[NRFX_PWM_ENABLED_COUNT];
   
   const uint8_t type;
   uint8_t pin;
